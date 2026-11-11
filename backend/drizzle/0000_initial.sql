@@ -1,0 +1,3 @@
+CREATE TABLE IF NOT EXISTS entrances (id INTEGER PRIMARY KEY AUTOINCREMENT, lat REAL NOT NULL, lon REAL NOT NULL, address TEXT NOT NULL, stairwell TEXT NOT NULL, apartments TEXT NOT NULL, note TEXT NOT NULL, direction INTEGER, updated_at TEXT NOT NULL);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS login_attempts (ip TEXT PRIMARY KEY, count INTEGER NOT NULL, until_ms INTEGER NOT NULL);

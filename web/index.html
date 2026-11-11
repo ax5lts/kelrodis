@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="lt">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"><meta name="theme-color" content="#f7f9f6">
+  <title>Kelrodis – tavo kelias aiškesnis</title><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" href="/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynhHhmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""><link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div id="map" aria-label="Lietuvos žemėlapis"></div>
+  <div class="top-shade"></div>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M16 3 27 27l-11-5-11 5L16 3Z" fill="currentColor"/><path d="M16 9v13" stroke="#fff" stroke-width="1.5"/></svg></span><span>kelrodis<span class="brand-dot">.</span></span></div>
+    <div class="top-actions"><span class="country"><span>●</span> LIETUVA</span><button class="icon-button" id="settingsBtn" aria-label="Nustatymai"><span data-icon="settings"></span></button></div>
+  </header>
+  <main class="overlay">
+    <div class="search-shell"><span class="search-icon" data-icon="search"></span><input id="searchInput" placeholder="Kur keliausime?" autocomplete="off" aria-label="Ieškoti adreso ar vietos"><button id="searchClear" class="clear hidden" aria-label="Išvalyti">×</button><button id="searchBtn" class="search-submit" aria-label="Ieškoti"><span data-icon="arrow-right"></span></button></div>
+    <div id="searchResults" class="floating-panel hidden"></div>
+    <div class="quick-row" id="quickRow"><button class="chip" id="favoritesBtn"><span data-icon="heart"></span> Išsaugotos</button><button class="chip" id="recentBtn"><span data-icon="clock"></span> Naujausios</button></div>
+  </main>
+  <div class="map-controls"><button id="zoomIn" class="map-button" aria-label="Priartinti">+</button><button id="zoomOut" class="map-button" aria-label="Nutolinti">−</button><span class="control-gap"></span><button id="locateBtn" class="map-button locate" aria-label="Mano vieta"><span data-icon="locate"></span></button></div>
+  <div class="map-label"><span></span> ATRASKITE LIETUVĄ</div>
+  <div id="hint" class="hint hidden"></div>
+  <section class="bottom-card" id="bottomCard">
+    <div class="card-grip"></div>
+    <div id="welcomeView"><div class="eyebrow"><span></span> JŪSŲ KELIONĖ PRASIDEDA ČIA</div><div class="welcome-line"><div><h1>Kur šiandien<br>keliausime<span class="green">?</span></h1><p>Raskite vietą, kelią ir tinkamą įėjimą.</p></div><div class="compass-art"><span>✳</span></div></div><div class="card-divider"></div><div class="welcome-footer"><span><span class="tiny-pin">●</span> SUKURTA KELIAUTI PO LIETUVĄ</span><button id="aboutBtn">Kaip naudotis <span>↗</span></button></div></div>
+    <div id="placeView" class="hidden"></div><div id="navView" class="hidden"></div>
+  </section>
+  <div id="scrim" class="scrim hidden"></div><aside id="drawer" class="drawer hidden" aria-live="polite"></aside>
+  <div id="toast" class="toast hidden" role="status"></div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script><script src="/app.js"></script><script>if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(()=>{});</script>
+</body></html>
