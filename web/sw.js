@@ -1,3 +1,6 @@
-self.addEventListener('install', event => self.skipWaiting());
-self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
-self.addEventListener('fetch', () => {});
+const CACHE='kelrodis-shell-v6';
+const ASSETS=['/','/index.html','/leaflet.css','/leaflet.js','/leaflet-rotate.js?v=6','/position-motion.js?v=6','/navigation-engine.js?v=6','/vector-basemap.js?v=6','/maplibre-gl.js?v=4','/maplibre-gl.css?v=6','/style.css?v=6','/app.js?v=6','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
+const ALLOWED=new Set(ASSETS.map(path=>new URL(path,self.location.origin).pathname));
+self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));});
+self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('kelrodis-shell-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
+self.addEventListener('fetch',event=>{const request=event.request,url=new URL(request.url);if(request.method!=='GET'||url.origin!==self.location.origin||!ALLOWED.has(url.pathname))return;event.respondWith((async()=>{const cache=await caches.open(CACHE).catch(()=>null);try{const response=await fetch(request);if(response.ok){if(cache)try{await cache.put(request,response.clone());}catch{}return response;}if(response.status<500)return response;}catch{}let saved=null;if(cache)try{saved=await cache.match(request,{ignoreSearch:true})||((request.mode==='navigate')?await cache.match('/index.html'):null);}catch{}return saved||new Response('Interneto ryšys nepasiekiamas.',{status:503,headers:{'content-type':'text/plain; charset=utf-8'}});})());});
