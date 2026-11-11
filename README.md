@@ -5,6 +5,7 @@ Lietuviška žemėlapių ir navigacijos programėlė su bendra pastatų įėjim�
 - [Atsisiųsti „Android“ APK](https://github.com/ax5lts/kelrodis/releases/latest/download/kelrodis.apk)
 - [Atidaryti programėlę naršyklėje](https://kelrodis-lietuva.kaikajusk.chatgpt.site)
 - [Atsisiuntimo puslapis](https://ax5lts.github.io/kelrodis/)
+- [Produkto kokybės įvertinimas ir bandymų planas](PRODUKTO-IVERTINIMAS.md)
 
 „Android“: atsisiųskite APK telefone ir atidarykite failą. Jei „Android“ paprašys, pasirinkite leisti diegimą šiam failų tvarkytuvui arba naršyklei. Ši versija neplatinama per „Google Play“.
 
