@@ -1,5 +1,5 @@
 import { readFile, mkdir, writeFile, copyFile } from 'node:fs/promises';
-const files=['index.html','style.css','app.js','manifest.webmanifest','sw.js','icon-192.png','icon-512.png'];
+const files=['index.html','style.css','app.js','manifest.webmanifest','sw.js','icon-192.png','icon-512.png','leaflet.js','leaflet.css'];
 const assets={};
 for(const name of files) assets['/'+name]=(await readFile('public/'+name)).toString('base64');
 const worker=await readFile('worker/index.js','utf8');
