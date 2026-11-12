@@ -1,0 +1,21 @@
+const {JSDOM}=require('jsdom');const fs=require('fs'),assert=require('assert'),path=require('path');const site=path.resolve(__dirname,'../web');
+const w=new JSDOM(fs.readFileSync(path.join(site,'index.html'),'utf8'),{url:'https://example.test',runScripts:'outside-only',pretendToBeVisual:true}).window,d=w.document;
+w.matchMedia=()=>({matches:false,addEventListener(){}});w.ResizeObserver=class{observe(){}};
+const handlers={};const m={on(k,f){handlers[k]=f;return this},getContainer(){return d.getElementById('map')},mouseEventToLatLng(e){return {lat:e.clientY,lng:e.clientX}},setView(){return this},getCenter(){return {lat:55.73,lng:24.35}},getZoom(){return 14},distance(a,b){return Math.hypot((a[0]-b[0])*111000,(a[1]-b[1])*63000)},fitBounds(){return this},panTo(){return this},invalidateSize(){return this},removeLayer(){},zoomIn(){},zoomOut(){}};
+const layer=()=>({addTo(){return this},on(){return this},clearLayers(){},setLatLng(){},getBounds(){return {}},getElement(){return null}});w.L={map:()=>m,tileLayer:layer,layerGroup:layer,divIcon:()=>({}),marker:layer,circleMarker:layer,geoJSON:layer,DomEvent:{stopPropagation(){}}};
+let hold;w.KelrodisLongPress={attach(opts){hold=opts}};const replies=[];
+w.fetch=url=>{if(String(url)==='/api/entrances')return Promise.resolve({ok:true,json:async()=>[]});if(String(url).includes('/reverse'))return new Promise(resolve=>replies.push(resolve));throw Error('unexpected '+url)};
+w.eval(fs.readFileSync(path.join(site,'position-motion.js'),'utf8'));w.eval(fs.readFileSync(path.join(site,'navigation-engine.js'),'utf8'));w.eval(fs.readFileSync(path.join(site,'app.js'),'utf8'));
+const flush=()=>new Promise(r=>setTimeout(r,0));
+const response=(lon,lat,street,number)=>({ok:true,json:async()=>({features:[{geometry:{coordinates:[lon,lat]},properties:{street,housenumber:number,city:'Panevėžys'}}]})});
+(async()=>{
+ handlers.click({latlng:{lat:55.73,lng:24.35}});assert(!d.getElementById('welcomeView').classList.contains('hidden'),'ordinary tap does not select a destination');assert.equal(replies.length,0);
+ hold.onHold({x:24.35,y:55.73});assert.match(d.getElementById('placeView').textContent,/Ieškomas artimiausias adresas/);assert(d.getElementById('routeBtn'));assert.equal(replies.length,1);
+ replies.shift()(response(24.3501,55.7301,'Smėlynės g.','55'));await flush();assert.match(d.getElementById('placeView').textContent,/Smėlynės g. 55/);assert.match(d.getElementById('placeView').textContent,/Artimiausias adresas/);
+ let trip=JSON.parse(w.localStorage.getItem('activeTripV1'));assert.equal(trip.stops[0].lat,55.73);assert.equal(trip.stops[0].lon,24.35);
+ d.querySelector('[data-add-stop]').click();hold.onHold({x:24.36,y:55.74});replies.shift()(response(24.3601,55.7401,'Antroji g.','3'));await flush();assert.deepEqual([...d.querySelectorAll('#placeView .stop-name strong')].map(n=>n.textContent),['Antroji g. 3','Smėlynės g. 55']);
+ hold.onHold({x:24.37,y:55.75});const old=replies.shift();hold.onHold({x:24.38,y:55.76});const current=replies.shift();current(response(24.3801,55.7601,'Nauja g.','2'));await flush();old(response(24.3701,55.7501,'Sena g.','1'));await flush();assert.match(d.getElementById('placeView').textContent,/Nauja g. 2/);assert.doesNotMatch(d.getElementById('placeView').textContent,/Sena g. 1/);
+ hold.onHold({x:24.39,y:55.77});replies.shift()({ok:false});await flush();assert.match(d.getElementById('placeView').textContent,/Adresas nerastas · 55.77000, 24.39000/);assert(d.getElementById('routeBtn'),'routing remains available when lookup fails');
+ d.getElementById('startPick').click();assert.equal(hold.isEnabled(),false);handlers.click({latlng:{lat:55.7,lng:24.3}});assert.match(d.getElementById('placeView').textContent,/Pradžia: pasirinktas taškas/);
+ console.log('PASS: map tap, held location, nearest address, waypoint, stale lookup and start selection');w.close();
+})().catch(e=>{console.error(e);process.exitCode=1;w.close()});

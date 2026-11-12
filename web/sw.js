@@ -1,5 +1,5 @@
-const CACHE='kelrodis-shell-v6';
-const ASSETS=['/','/index.html','/leaflet.css','/leaflet.js','/leaflet-rotate.js?v=6','/position-motion.js?v=6','/navigation-engine.js?v=6','/vector-basemap.js?v=6','/maplibre-gl.js?v=4','/maplibre-gl.css?v=6','/style.css?v=6','/app.js?v=6','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
+const CACHE='kelrodis-shell-v7';
+const ASSETS=['/','/index.html','/leaflet.css','/leaflet.js','/leaflet-rotate.js?v=7','/position-motion.js?v=7','/navigation-engine.js?v=7','/vector-basemap.js?v=7','/maplibre-gl.js?v=4','/maplibre-gl.css?v=7','/style.css?v=7','/map-long-press.js?v=7','/app.js?v=7','/manifest.webmanifest','/icon-192.png','/icon-512.png'];
 const ALLOWED=new Set(ASSETS.map(path=>new URL(path,self.location.origin).pathname));
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('kelrodis-shell-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
