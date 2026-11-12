@@ -7,7 +7,25 @@ async function authorized(req,env){if(!env.ADMIN_PASSWORD)return false;const t=(
 async function body(req){if(Number(req.headers.get('content-length')||0)>16384)throw Error('Per didelė užklausa.');const text=await req.text();if(text.length>16384)throw Error('Per didelė užklausa.');try{return JSON.parse(text);}catch{throw Error('Neteisingi duomenys.');}}
 function validate(d){const lat=Number(d.lat),lon=Number(d.lon),direction=d.direction===''||d.direction==null?null:Number(d.direction);const address=String(d.address||'').trim(),stairwell=String(d.stairwell||'').trim(),apartments=String(d.apartments||'').trim(),note=String(d.note||'').trim();if(!Number.isFinite(lat)||!Number.isFinite(lon)||lat<53.8||lat>56.6||lon<20.8||lon>26.9||!address||!stairwell||!apartments||address.length>180||stairwell.length>60||apartments.length>80||note.length>300||(direction!==null&&(!Number.isInteger(direction)||direction<0||direction>359)))throw Error('Patikrinkite laukus ir vietą Lietuvos žemėlapyje.');return [lat,lon,address,stairwell,apartments,note,direction,new Date().toISOString()];}
 export default {async fetch(req,env){const url=new URL(req.url),p=url.pathname;try{
+ if(p==='/api/map-config'&&req.method==='GET'){const token=typeof env.MAPBOX_PUBLIC_TOKEN==='string'&&env.MAPBOX_PUBLIC_TOKEN.startsWith('pk.')?env.MAPBOX_PUBLIC_TOKEN:null;return json({mapboxPublicToken:token});}
  if(p==='/api/entrances'&&req.method==='GET'){const result=await env.DB.prepare('SELECT * FROM entrances ORDER BY updated_at DESC').all();return json(result.results);}
+ if(p==='/api/entrance-reports'&&req.method==='POST'){
+  const d=await body(req),id=Number(d.entranceId),reason=String(d.reason||'');
+  if(!Number.isSafeInteger(id)||id<1||!['location','apartments','note'].includes(reason))return json({error:'Pasirinkite pranešimo priežastį.'},400);
+  const entry=await env.DB.prepare('SELECT id FROM entrances WHERE id=?').bind(id).first();if(!entry)return json({error:'Įėjimas neberastas.'},404);
+  const now=new Date(),since=new Date(now.getTime()-86400000).toISOString();
+  const result=await env.DB.prepare('INSERT INTO entrance_reports(entrance_id,reason,created_at) SELECT ?,?,? WHERE NOT EXISTS (SELECT 1 FROM entrance_reports WHERE entrance_id=? AND reason=? AND created_at>?)').bind(id,reason,now.toISOString(),id,reason,since).run();
+  return json({ok:true,duplicate:!result.meta.changes});
+ }
+ if(p==='/api/entrance-reports'&&req.method==='GET'){
+  if(!await authorized(req,env))return json({error:'Prisijunkite kaip administratorius.'},401);
+  const result=await env.DB.prepare('SELECT r.id,r.entrance_id,r.reason,r.created_at,e.address,e.stairwell FROM entrance_reports r JOIN entrances e ON e.id=r.entrance_id ORDER BY r.created_at DESC LIMIT 100').all();return json(result.results);
+ }
+ const reportId=p.match(/^\/api\/entrance-reports\/(\d+)$/);
+ if(reportId&&req.method==='DELETE'){
+  if(!await authorized(req,env))return json({error:'Prisijunkite kaip administratorius.'},401);
+  const result=await env.DB.prepare('DELETE FROM entrance_reports WHERE id=?').bind(Number(reportId[1])).run();return json({ok:!!result.meta.changes},result.meta.changes?200:404);
+ }
  if(p==='/api/login'&&req.method==='POST'){
   const ip=req.headers.get('cf-connecting-ip')||'unknown', now=Date.now();const attempt=await env.DB.prepare('SELECT count, until_ms FROM login_attempts WHERE ip=?').bind(ip).first();if(attempt&&attempt.until_ms>now&&attempt.count>=10)return json({error:'Per daug bandymų. Pabandykite vėliau.'},429);
   const d=await body(req);const candidate=String(d.password||'');const candidateHash=hex(await crypto.subtle.digest('SHA-256',enc.encode(candidate)));const expectedHash=hex(await crypto.subtle.digest('SHA-256',enc.encode(env.ADMIN_PASSWORD||'')));

@@ -1,0 +1,14 @@
+const {DatabaseSync}=require('node:sqlite');const assert=require('node:assert/strict');const {pathToFileURL}=require('node:url');const path=require('node:path');
+const sqlite=new DatabaseSync(':memory:');sqlite.exec('CREATE TABLE entrances(id INTEGER PRIMARY KEY, address TEXT, stairwell TEXT);CREATE TABLE login_attempts(ip TEXT PRIMARY KEY,count INTEGER,until_ms INTEGER);');sqlite.exec(require('node:fs').readFileSync(path.resolve(__dirname,'../backend/drizzle/0001_entrance_reports.sql'),'utf8'));sqlite.prepare('INSERT INTO entrances VALUES (?,?,?)').run(7,'Bandomoji g. 1','1 laiptinė');
+const db={prepare(sql){let values=[];return {bind(...args){values=args;return this},async run(){const r=sqlite.prepare(sql).run(...values);return {meta:{changes:r.changes}}},async first(){return sqlite.prepare(sql).get(...values)||null},async all(){return {results:sqlite.prepare(sql).all(...values)}}}}};
+(async()=>{const worker=(await import(pathToFileURL(path.resolve(__dirname,'../backend/worker/index.js')))).default;const env={DB:db,ADMIN_PASSWORD:'test-password'};async function req(url,method='GET',body,token){const headers={};if(body)headers['content-type']='application/json';if(token)headers.authorization='Bearer '+token;return worker.fetch(new Request('https://example.test'+url,{method,headers,...(body?{body:JSON.stringify(body)}:{})}),env)}
+ let r=await req('/api/entrance-reports','POST',{entranceId:7,reason:'free-text'});assert.equal(r.status,400);
+ r=await req('/api/entrance-reports','POST',{entranceId:999,reason:'location'});assert.equal(r.status,404);
+ r=await req('/api/entrance-reports','POST',{entranceId:7,reason:'location',name:'Sensitive data is ignored'});assert.equal(r.status,200);assert.equal((await r.json()).duplicate,false);
+ r=await req('/api/entrance-reports','POST',{entranceId:7,reason:'location'});assert.equal((await r.json()).duplicate,true);assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM entrance_reports').get().count,1);
+ r=await req('/api/entrance-reports');assert.equal(r.status,401);
+ r=await req('/api/login','POST',{password:'test-password'});const token=(await r.json()).token;assert(token);
+ r=await req('/api/entrance-reports','GET',null,token);const list=await r.json();assert.equal(list.length,1);assert.equal(list[0].reason,'location');assert.equal(list[0].address,'Bandomoji g. 1');assert(!JSON.stringify(list).includes('Sensitive'));
+ r=await req('/api/entrance-reports/'+list[0].id,'DELETE');assert.equal(r.status,401);r=await req('/api/entrance-reports/'+list[0].id,'DELETE',null,token);assert.equal(r.status,200);assert.equal(sqlite.prepare('SELECT COUNT(*) AS count FROM entrance_reports').get().count,0);
+ console.log('PASS: reports validation, duplicate limit, privacy, admin authorization and resolution');sqlite.close();
+})().catch(e=>{console.error(e);process.exitCode=1;sqlite.close()});

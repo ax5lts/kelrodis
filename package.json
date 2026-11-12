@@ -2,7 +2,7 @@
   "name": "kelrodis-web-checks",
   "private": true,
   "scripts": {
-    "test": "node tests/test-motion.cjs && node tests/test-navigation.cjs && node tests/test-rotation.cjs && node tests/test-vector.cjs && node tests/test-integration.cjs && node tests/test-waypoints.cjs && node tests/test-restore.cjs && node tests/test-app.cjs && node tests/test-navigation-integration.cjs && node tests/test-timeout.cjs && node tests/test-offline.cjs && node tests/test-long-press.cjs && node tests/test-map-selection.cjs && node tests/test-mapbox-provider.cjs",
+    "test": "node tests/test-motion.cjs && node tests/test-navigation.cjs && node tests/test-rotation.cjs && node tests/test-vector.cjs && node tests/test-integration.cjs && node tests/test-waypoints.cjs && node tests/test-restore.cjs && node tests/test-app.cjs && node tests/test-navigation-integration.cjs && node tests/test-timeout.cjs && node tests/test-offline.cjs && node tests/test-long-press.cjs && node tests/test-map-selection.cjs && node tests/test-mapbox-provider.cjs && node tests/test-address-entry.cjs && node tests/test-entrance-reports.cjs",
     "test:live": "node tests/test-navigation-live.cjs"
   },
   "devDependencies": {"jsdom": "31.0.0"}

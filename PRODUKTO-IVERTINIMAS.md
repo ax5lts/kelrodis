@@ -1,3 +1,5 @@
+> **Būklės atnaujinimas, 2026-11-12.** „Kelrodis“ maršrutams jau naudoja „Mapbox Directions“ (`driving-traffic`), jei sukonfigūruotas viešasis raktas. Eismo duomenų aprėptis Lietuvoje ir tikslumas realiuose važiavimuose nėra patvirtinti. Ieškant namo pridedamas perspėjimas, jei įvesto numerio tarp grąžintų rezultatų nėra; tai nėra oficialaus registro patikra. Pastato kortelėje rodomi įėjimai ir galima pranešti apie klaidą iš anksto apibrėžta priežastimi. Navigacijos metu dingus ryšiui esamas maršrutas lieka atviroje programėlėje, tačiau pereinant prie kito sustojimo be interneto nerodomi tariamai nauji posūkiai. Visiškas maršruto atkūrimas po proceso uždarymo ir autonominiai žemėlapiai neįdiegti. „Android“ tebėra WebView apvalkalas, o tikro telefono ir važiavimo bandymai dar neatlikti. Senesniame vertinime žemiau išlikę istorinių pastabų apie ankstesnį OSRM serverį.
+
 # „Kelrodžio“ naudojimo ir pasirengimo vertinimas
 
 2026-11-11. Tai kodo ir automatinių bandymų vertinimas. Faktinis važiavimas ir telefonų akumuliatoriaus, GPS, ryšio bei ekrano testai neatlikti. Programėlė tebėra pradinė versija.
