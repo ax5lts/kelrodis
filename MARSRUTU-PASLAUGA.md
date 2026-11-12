@@ -1,5 +1,7 @@
 # Maršrutų paslaugos prijungimas
 
+**Licencijos klausimas:** „Mapbox“ naudojimo sąlygose programėlėms, susijusioms su naudojimu transporto priemonėse, gali reikėti atskiros kūrimo ir komercinės licencijos. Kadangi „Kelrodis“ skirtas navigacijai automobiliu, prieš naudojimą darbo veikloje reikia su „Mapbox“ patvirtinti, kokia licencija taikoma šiai programėlei: https://www.mapbox.com/legal/tos . Vien veikiantis API raktas ar nemokamas užklausų limitas licencijos nepatvirtina.
+
 Programėlėje galima įjungti „Mapbox Directions“ maršrutus automobiliu, kuriems naudojamas `driving-traffic` profilis. Kai kuriuose regionuose eismo duomenys gali būti neprieinami; paslauga tada gali grąžinti įprastą maršrutą. Prieš pradedant naudoti pristatymui būtina patikrinti adresų, kelių ir eismo duomenų kokybę konkrečiose vietovėse.
 
 1. Susikurkite paskyrą https://account.mapbox.com/ ir susipažinkite su https://www.mapbox.com/pricing/ . Paslaugai gali reikėti mokėjimo duomenų, o nemokamus limitus viršijantis naudojimas gali būti apmokestintas.
