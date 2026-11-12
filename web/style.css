@@ -16,3 +16,6 @@ html,body{width:100%;height:100%;height:100dvh;overscroll-behavior:none}.topbar,
 .nav-buttons{display:flex;gap:6px}.nav-buttons #voiceBtn{min-width:38px;padding:0 8px}
 
 #map{-webkit-touch-callout:none;user-select:none}
+
+/* Alternatyvos ir sustojimų tempimas telefone. */
+.route-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}.route-option{min-width:0}.route-option strong{white-space:normal}.stop-row{touch-action:none;user-select:none;-webkit-touch-callout:none;border-radius:9px}.stop-row.dragging{opacity:.5;background:var(--surface);box-shadow:0 0 0 2px var(--green)}.stop-row.drop-target{box-shadow:inset 0 3px var(--green);background:var(--surface)}.stop-handle{pointer-events:none}.stop-drag-hint{font-size:10px;color:var(--muted);padding:2px 0 5px}.nav-stop-list{min-width:0;display:flex;flex-direction:column;gap:3px}.nav-stop-list span{display:block}.nav-stop-list span:first-child{color:var(--ink);font-weight:700}
